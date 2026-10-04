@@ -120,6 +120,146 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/main.js"></script>
+  
+  <!-- TÜM MANTIK TEK YERDE -->
+  <script>
+    const socket = io();
+
+    const loginSection = document.getElementById('login-section');
+    const registerSection = document.getElementById('register-section');
+    const authContainer = document.getElementById('auth-container');
+    const feedContainer = document.getElementById('feed-container');
+
+    // Sayfa Geçişleri
+    document.getElementById('goto-register').onclick = () => {
+      loginSection.style.display = 'none';
+      registerSection.style.display = 'block';
+    };
+
+    document.getElementById('goto-login').onclick = () => {
+      registerSection.style.display = 'none';
+      loginSection.style.display = 'block';
+    };
+
+    // Kayıt Ol Butonu
+    document.getElementById('register-btn').onclick = async () => {
+      const name = document.getElementById('reg-name').value.trim();
+      const username = document.getElementById('reg-username').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const password = document.getElementById('reg-password').value;
+
+      if (!name || !username || !email || !password) {
+        return alert("Lütfen zorunlu alanları doldurun!");
+      }
+
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, username, email, phone, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(data.message);
+          registerSection.style.display = 'none';
+          loginSection.style.display = 'block';
+        } else {
+          alert(data.error);
+        }
+      } catch (err) {
+        alert("Kayıt sırasında bağlantı hatası oluştu!");
+      }
+    };
+
+    // Giriş Yap Butonu
+    document.getElementById('login-btn').onclick = async () => {
+      const identifier = document.getElementById('login-identifier').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      if (!identifier || !password) {
+        return alert("Bilgileri girin!");
+      }
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem('fetih_username', data.username);
+          showFeed();
+        } else {
+          alert(data.error);
+        }
+      } catch (err) {
+        alert("Giriş hatası!");
+      }
+    };
+
+    document.getElementById('logout-btn').onclick = () => {
+      localStorage.removeItem('fetih_username');
+      authContainer.style.display = 'block';
+      feedContainer.style.display = 'none';
+    };
+
+    function showFeed() {
+      authContainer.style.display = 'none';
+      feedContainer.style.display = 'block';
+      loadPosts();
+    }
+
+    async function loadPosts() {
+      try {
+        const res = await fetch('https://fetih-social-f6505-default-rtdb.firebaseio.com/posts.json');
+        const data = await res.json();
+        const postsList = document.getElementById('postsList');
+        postsList.innerHTML = '';
+        if (data) {
+          Object.keys(data).reverse().forEach(key => {
+            addPostToUI(data[key]);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function addPostToUI(post) {
+      const postsList = document.getElementById('postsList');
+      const div = document.createElement('div');
+      div.className = 'post-card';
+      div.innerHTML = `
+        <div class="post-header">
+          <div class="user-avatar">${post.username ? post.username[0].toUpperCase() : 'U'}</div>
+          <strong>@${post.username}</strong>
+        </div>
+        <p>${post.content}</p>
+        <span class="post-time">${new Date(post.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+      `;
+      postsList.prepend(div);
+    }
+
+    document.getElementById('sendBtn').onclick = () => {
+      const content = document.getElementById('postContent').value.trim();
+      if (!content) return;
+      socket.emit('new_post', {
+        username: localStorage.getItem('fetih_username'),
+        content,
+        timestamp: Date.now()
+      });
+      document.getElementById('postContent').value = '';
+    };
+
+    socket.on('receive_post', (post) => {
+      addPostToUI(post);
+    });
+
+    if (localStorage.getItem('fetih_username')) {
+      showFeed();
+    }
+  </script>
 </body>
 </html>
