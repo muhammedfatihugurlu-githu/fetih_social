@@ -70,7 +70,7 @@
     .post-video { width: 100%; border-radius: 10px; max-height: 300px; margin-top: 6px; outline: none; }
     .post-time { color: #64748b; font-size: 10px; margin-top: 6px; display: block; text-align: right; }
 
-    /* --- INSTA TARZI KAMERA & GALERİ ŞERİDİ MODALI --- */
+    /* --- INSTA TARZI KAMERA MODALI (YUKARI TAŞINDI) --- */
     #camera-modal {
       display: none;
       position: fixed;
@@ -80,7 +80,7 @@
       z-index: 9999;
       flex-direction: column;
       justify-content: space-between;
-      padding: 15px;
+      padding: 20px 15px 40px 15px; /* Alt boşluk artırıldı */
     }
     .camera-top-bar {
       display: flex;
@@ -100,8 +100,9 @@
       position: relative;
       overflow: hidden;
       border-radius: 16px;
-      margin: 8px 0;
+      margin: 12px 0;
       background: #111;
+      max-height: 65vh; /* Kamera ekranı yukarıda dengelendi */
     }
     #cameraStream { width: 100%; height: 100%; object-fit: cover; }
     #previewImageCaptured { display: none; width: 100%; height: 100%; object-fit: cover; }
@@ -109,17 +110,16 @@
     .camera-controls {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding-bottom: 10px;
+      gap: 15px;
+      padding-bottom: 20px;
     }
 
-    /* Altta sıralanan galeri şeridi (Instagram stili) */
     .insta-gallery-strip {
       display: flex;
       gap: 8px;
       width: 100%;
       overflow-x: auto;
-      padding-bottom: 6px;
+      padding-bottom: 4px;
     }
     .insta-gallery-strip::-webkit-scrollbar { height: 4px; }
     .insta-gallery-strip::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
@@ -157,13 +157,15 @@
       justify-content: space-around;
       align-items: center;
       width: 100%;
+      margin-top: 5px;
     }
     .shutter-btn {
-      width: 65px; height: 65px;
+      width: 75px; height: 75px; /* Tuş daha rahat basılması için büyütüldü */
       background: white;
-      border: 4px solid rgba(56, 189, 248, 0.8);
+      border: 5px solid rgba(56, 189, 248, 0.8);
       border-radius: 50%;
       cursor: pointer;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
     }
 
     /* Alt Navigasyon Barı */
@@ -349,7 +351,7 @@
     </div>
 
     <div class="camera-controls">
-      <!-- Altta Sıralanan Fotoğraflar Şeridi (Instagram Tarzı) -->
+      <!-- Altta Sıralanan Fotoğraflar Şeridi -->
       <div class="insta-gallery-strip" id="instaGalleryStrip">
         <label class="gallery-item-add" title="Galeriden Fotoğraf Seç">
           <i class="fa-solid fa-images"></i>
@@ -358,6 +360,7 @@
         </label>
       </div>
 
+      <!-- Çekim tuşu artık daha yukarıda ve ortada -->
       <div class="capture-row">
         <div></div>
         <button class="shutter-btn" id="shutterBtn" title="Fotoğraf Çek"></button>
@@ -407,7 +410,6 @@
 
     document.getElementById('openCameraBtn').onclick = openCameraModal;
 
-    // Sağa/sola kaydırma (Swipe) ile kamera açma
     let touchStartX = 0;
     document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
     document.addEventListener('touchend', e => {
@@ -447,7 +449,6 @@
       }
     };
 
-    // Galeriden seçilen fotoğrafları altta sırayla şeride dizme
     document.getElementById('stripFileInput').onchange = function(e) {
       const files = e.target.files;
       if (!files.length) return;
