@@ -60,7 +60,7 @@
 
       <button id="login-btn" class="btn">Giriş Yap</button>
 
-      <p class="toggle-text">Hesabın yok mu? <span onclick="window.toggleAuth('register')">Kayıt Ol</span></p>
+      <p class="toggle-text">Hesabın yok mu? <span id="goto-register">Kayıt Ol</span></p>
     </div>
 
     <!-- KAYIT FORMU -->
@@ -97,7 +97,7 @@
 
       <button id="register-btn" class="btn">Kayıt Ol</button>
 
-      <p class="toggle-text">Zaten hesabın var mı? <span onclick="window.toggleAuth('login')">Giriş Yap</span></p>
+      <p class="toggle-text">Zaten hesabın var mı? <span id="goto-login">Giriş Yap</span></p>
     </div>
 
   </div>
@@ -118,6 +118,30 @@
       <div id="postsList"></div>
     </div>
   </div>
+
+  <!-- Sayfada direkt çalışan garantili tıklama scripti -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var loginSec = document.getElementById('login-section');
+      var regSec = document.getElementById('register-section');
+      var gotoReg = document.getElementById('goto-register');
+      var gotoLog = document.getElementById('goto-login');
+
+      if (gotoReg) {
+        gotoReg.onclick = function() {
+          loginSec.style.display = 'none';
+          regSec.style.display = 'block';
+        };
+      }
+
+      if (gotoLog) {
+        gotoLog.onclick = function() {
+          regSec.style.display = 'none';
+          loginSec.style.display = 'block';
+        };
+      }
+    });
+  </script>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/main.js"></script>
