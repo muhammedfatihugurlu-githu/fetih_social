@@ -33,18 +33,19 @@
     .input-group textarea { padding-left: 14px; resize: none; height: 80px; }
     .input-group input:focus, .input-group textarea:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
 
-    .file-input-wrapper {
+    .post-actions {
       display: flex;
+      align-items: center;
       gap: 10px;
       margin-bottom: 14px;
     }
 
-    .file-btn {
+    .single-file-btn {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       background: rgba(15, 23, 42, 0.8);
       border: 1px dashed rgba(56, 189, 248, 0.4);
-      border-radius: 10px;
+      border-radius: 12px;
       color: #38bdf8;
       font-size: 13px;
       font-weight: 600;
@@ -57,11 +58,11 @@
       transition: background 0.3s;
     }
 
-    .file-btn:hover {
+    .single-file-btn:hover {
       background: rgba(56, 189, 248, 0.1);
     }
 
-    .file-btn input {
+    .single-file-btn input {
       display: none;
     }
 
@@ -169,18 +170,13 @@
       <textarea id="postContent" placeholder="Ne düşünüyorsun?"></textarea>
     </div>
 
-    <!-- Fotoğraf ve Kamera Yükleme Butonları -->
-    <div class="file-input-wrapper">
-      <label class="file-btn">
-        <i class="fa-solid fa-image"></i> Galeri
-        <input type="file" id="mediaFile" accept="image/*,video/*">
-      </label>
-      <label class="file-btn">
-        <i class="fa-solid fa-camera"></i> Kamera
-        <input type="file" id="cameraFile" accept="image/*,video/*" capture="environment">
+    <!-- Tek Tuşla Medya Ekleme -->
+    <div class="post-actions">
+      <label class="single-file-btn">
+        <i class="fa-solid fa-camera-retro"></i> <span id="fileBtnText">Fotoğraf / Video Seç</span>
+        <input type="file" id="universalMediaInput" accept="image/*,video/*">
       </label>
     </div>
-    <div id="fileNameDisplay" style="font-size: 11px; color: #38bdf8; margin-bottom: 10px; text-align: center;"></div>
 
     <button id="sendBtn" class="btn"><i class="fa-solid fa-paper-plane"></i> Paylaş</button>
 
@@ -211,22 +207,19 @@
       loginSection.style.display = 'block';
     };
 
-    // Dosya Seçildiğinde (Galeri veya Kamera)
-    function handleFileSelection(e) {
+    // Tek Buton Medya Seçim Dinleyicisi (Mobilde ve PC'de çalışır)
+    document.getElementById('universalMediaInput').onchange = function(e) {
       const file = e.target.files[0];
       if (!file) return;
 
-      document.getElementById('fileNameDisplay').innerText = "Seçilen dosya: " + file.name;
+      document.getElementById('fileBtnText').innerText = file.name.length > 20 ? file.name.substring(0, 18) + '...' : file.name;
 
       const reader = new FileReader();
       reader.onload = function(uploadEvent) {
         selectedMediaBase64 = uploadEvent.target.result;
       };
       reader.readAsDataURL(file);
-    }
-
-    document.getElementById('mediaFile').onchange = handleFileSelection;
-    document.getElementById('cameraFile').onchange = handleFileSelection;
+    };
 
     document.getElementById('register-btn').onclick = async () => {
       const name = document.getElementById('reg-name').value.trim();
@@ -350,10 +343,9 @@
       });
 
       document.getElementById('postContent').value = '';
-      document.getElementById('fileNameDisplay').innerText = '';
+      document.getElementById('fileBtnText').innerText = 'Fotoğraf / Video Seç';
       selectedMediaBase64 = null;
-      document.getElementById('mediaFile').value = '';
-      document.getElementById('cameraFile').value = '';
+      document.getElementById('universalMediaInput').value = '';
     };
 
     socket.on('receive_post', (post) => {
