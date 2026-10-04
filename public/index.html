@@ -75,9 +75,10 @@
         <input type="text" id="reg-name" placeholder="Ad Soyad">
       </div>
 
+      <!-- Kullanıcı adı: Boşluk girilemez -->
       <div class="input-group">
         <i class="fa-solid fa-at"></i>
-        <input type="text" id="reg-username" placeholder="Kullanıcı Adı (İngilizce karakter)">
+        <input type="text" id="reg-username" placeholder="Kullanıcı Adı (Boşluksuz)" oninput="this.value = this.value.replace(/\s/g, '').toLowerCase()">
       </div>
 
       <div class="input-group">
@@ -85,9 +86,10 @@
         <input type="email" id="reg-email" placeholder="E-posta Adresi">
       </div>
 
+      <!-- Telefon No: Boşluk girilemez -->
       <div class="input-group">
         <i class="fa-solid fa-phone"></i>
-        <input type="text" id="reg-phone" placeholder="Telefon Numarası">
+        <input type="text" id="reg-phone" placeholder="Telefon Numarası (Boşluksuz)" oninput="this.value = this.value.replace(/\s/g, '')">
       </div>
 
       <div class="input-group">
@@ -121,7 +123,6 @@
 
   <script src="/socket.io/socket.io.js"></script>
   
-  <!-- TÜM MANTIK TEK YERDE -->
   <script>
     const socket = io();
 
