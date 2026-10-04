@@ -9,18 +9,34 @@
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #f8fafc; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 16px; }
+    
+    html, body {
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) fixed;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 16px;
+    }
     
     .container { 
       width: 100%; 
       max-width: 480px; 
-      background: rgba(30, 41, 59, 0.75); 
+      background: rgba(30, 41, 59, 0.85); 
       backdrop-filter: blur(16px); 
       -webkit-backdrop-filter: blur(16px); 
       border: 1px solid rgba(255, 255, 255, 0.1); 
       border-radius: 20px; 
       padding: 30px 20px; 
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
+      margin-bottom: 30px;
     }
 
     .brand-header { text-align: center; margin-bottom: 24px; }
@@ -58,15 +74,9 @@
       transition: background 0.3s;
     }
 
-    .single-file-btn:hover {
-      background: rgba(56, 189, 248, 0.1);
-    }
+    .single-file-btn:hover { background: rgba(56, 189, 248, 0.1); }
+    .single-file-btn input { display: none; }
 
-    .single-file-btn input {
-      display: none;
-    }
-
-    /* Seçilen medya önizleme alanı */
     #previewContainer {
       display: none;
       position: relative;
@@ -97,12 +107,12 @@
     .toggle-text span { color: #38bdf8; font-weight: 600; cursor: pointer; }
     .toggle-text span:hover { text-decoration: underline; }
 
-    /* Akış Ekranı */
-    .feed-container { max-width: 540px; width: 100%; padding: 20px 16px; }
+    /* Akış ve Profil Sekmeleri */
+    .feed-container { max-width: 540px; width: 100%; padding: 20px 16px 80px 16px; }
     .feed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .logout-btn { width: auto; padding: 6px 12px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
     
-    .post-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px; margin-top: 14px; }
+    .post-card { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px; margin-top: 14px; }
     .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
     .user-avatar { width: 34px; height: 34px; background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
     .post-card strong { color: #38bdf8; font-size: 14px; }
@@ -110,6 +120,64 @@
     .post-media { width: 100%; border-radius: 10px; max-height: 300px; object-fit: cover; margin-top: 6px; }
     .post-video { width: 100%; border-radius: 10px; max-height: 300px; margin-top: 6px; outline: none; }
     .post-time { color: #64748b; font-size: 10px; margin-top: 6px; display: block; text-align: right; }
+
+    /* Alt Navigasyon Barı */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 1000;
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.3s;
+    }
+
+    .nav-item i { font-size: 18px; }
+    .nav-item.active { color: #38bdf8; }
+
+    /* Profil Sayfası Alanı */
+    .profile-section { display: none; }
+    .profile-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .profile-big-avatar {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #38bdf8, #6366f1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      margin: 0 auto 10px auto;
+    }
+    .profile-box h3 { font-size: 18px; color: #fff; margin-bottom: 4px; }
+    .profile-box p { color: #94a3b8; font-size: 13px; }
 
     @media (max-width: 480px) {
       body { padding: 8px; }
@@ -183,37 +251,69 @@
 
   </div>
 
-  <!-- ANA AKIŞ EKRANI -->
+  <!-- ANA AKIŞ VE PROFİL EKRANI -->
   <div id="feed-container" class="container feed-container" style="display: none;">
-    <div class="feed-header">
-      <h2>Fetih Sosyal</h2>
-      <button id="logout-btn" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Çıkış</button>
-    </div>
     
-    <div class="input-group">
-      <textarea id="postContent" placeholder="Ne düşünüyorsun?"></textarea>
+    <!-- AKIŞ SEKMESİ -->
+    <div id="tab-feed">
+      <div class="feed-header">
+        <h2>Fetih Sosyal</h2>
+        <button id="logout-btn" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Çıkış</button>
+      </div>
+      
+      <div class="input-group">
+        <textarea id="postContent" placeholder="Ne düşünüyorsun?"></textarea>
+      </div>
+
+      <div class="post-actions">
+        <label class="single-file-btn">
+          <i class="fa-solid fa-camera-retro"></i> <span id="fileBtnText">Fotoğraf / Video Seç</span>
+          <input type="file" id="universalMediaInput" accept="image/*,video/*">
+        </label>
+      </div>
+
+      <div id="previewContainer">
+        <img id="previewImg" src="" alt="Önizleme">
+        <br>
+        <button class="remove-media" id="removeMediaBtn">Medyayı Kaldır</button>
+      </div>
+
+      <button id="sendBtn" class="btn"><i class="fa-solid fa-paper-plane"></i> Paylaş</button>
+
+      <div id="feed">
+        <div id="postsList"></div>
+      </div>
     </div>
 
-    <!-- Medya Yükleme Alanı -->
-    <div class="post-actions">
-      <label class="single-file-btn">
-        <i class="fa-solid fa-camera-retro"></i> <span id="fileBtnText">Fotoğraf Seç [Video yok]</span>
-        <input type="file" id="universalMediaInput" accept="image/*,video/*">
-      </label>
+    <!-- PROFİL SEKMESİ -->
+    <div id="tab-profile" class="profile-section">
+      <div class="feed-header">
+        <h2>Profilim</h2>
+        <button id="profile-logout-btn" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Çıkış</button>
+      </div>
+
+      <div class="profile-box">
+        <div class="profile-big-avatar" id="profileAvatarLetter">U</div>
+        <h3 id="profileUsernameDisplay">@kullanici</h3>
+        <p>Fetih Sosyal Üyesi</p>
+      </div>
+
+      <h3 style="font-size: 15px; color: #38bdf8; margin-bottom: 10px;"><i class="fa-solid fa-address-card"></i> Paylaşımlarım</h3>
+      <div id="myPostsList"></div>
     </div>
 
-    <!-- Önizleme Alanı -->
-    <div id="previewContainer">
-      <img id="previewImg" src="" alt="Önizleme">
-      <br>
-      <button class="remove-media" id="removeMediaBtn">Medyayı Kaldır</button>
+    <!-- ALT NAVİGASYON (TAB BAR) -->
+    <div class="bottom-nav">
+      <button class="nav-item active" id="nav-feed-btn" onclick="switchTab('feed')">
+        <i class="fa-solid fa-house"></i>
+        <span>Akış</span>
+      </button>
+      <button class="nav-item" id="nav-profile-btn" onclick="switchTab('profile')">
+        <i class="fa-solid fa-user"></i>
+        <span>Profilim</span>
+      </button>
     </div>
 
-    <button id="sendBtn" class="btn"><i class="fa-solid fa-paper-plane"></i> Paylaş</button>
-
-    <div id="feed">
-      <div id="postsList"></div>
-    </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -227,6 +327,7 @@
     const feedContainer = document.getElementById('feed-container');
 
     let selectedMediaBase64 = null;
+    let allPostsCache = {};
 
     document.getElementById('goto-register').onclick = () => {
       loginSection.style.display = 'none';
@@ -238,12 +339,32 @@
       loginSection.style.display = 'block';
     };
 
-    // Mobil Çökmesini Önleyen Akıllı Medya Sıkıştırma / Okuma
+    // Sekme Değiştirme (Akış / Profil)
+    window.switchTab = function(tabName) {
+      const feedTab = document.getElementById('tab-feed');
+      const profileTab = document.getElementById('tab-profile');
+      const navFeed = document.getElementById('nav-feed-btn');
+      const navProfile = document.getElementById('nav-profile-btn');
+
+      if (tabName === 'feed') {
+        feedTab.style.display = 'block';
+        profileTab.style.display = 'none';
+        navFeed.classList.add('active');
+        navProfile.classList.remove('active');
+      } else {
+        feedTab.style.display = 'none';
+        profileTab.style.display = 'block';
+        navProfile.classList.add('active');
+        navFeed.classList.remove('active');
+        loadMyProfile();
+      }
+    };
+
+    // Medya Seçimi
     document.getElementById('universalMediaInput').onchange = function(e) {
       const file = e.target.files[0];
       if (!file) return;
 
-      // Dosya boyutu 15MB'tan büyükse uyar
       if (file.size > 15 * 1024 * 1024) {
         alert("Seçilen dosya çok büyük (Maksimum 15MB olmalı)!");
         return;
@@ -253,7 +374,6 @@
       reader.onload = function(uploadEvent) {
         const result = uploadEvent.target.result;
         
-        // Eğer görsel ise Canvas ile küçültüp belleği rahatlatalım (Mobilde yenilenmeyi önler)
         if (file.type.startsWith('image/')) {
           const img = new Image();
           img.src = result;
@@ -265,15 +385,9 @@
             let height = img.height;
 
             if (width > height) {
-              if (width > MAX_WIDTH) {
-                height *= MAX_WIDTH / width;
-                width = MAX_WIDTH;
-              }
+              if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
             } else {
-              if (height > MAX_HEIGHT) {
-                width *= MAX_HEIGHT / height;
-                height = MAX_HEIGHT;
-              }
+              if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
             }
 
             canvas.width = width;
@@ -281,11 +395,10 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             
-            selectedMediaBase64 = canvas.toDataURL('image/jpeg', 0.7); // Kaliteyi %70'e çekerek RAM'i korur
+            selectedMediaBase64 = canvas.toDataURL('image/jpeg', 0.7);
             showPreview(selectedMediaBase64);
           };
         } else {
-          // Video için direkt aktar
           selectedMediaBase64 = result;
           showPreview(result);
         }
@@ -299,7 +412,7 @@
       const container = document.getElementById('previewContainer');
       const img = document.getElementById('previewImg');
       if (src.startsWith('data:video')) {
-        img.style.display = 'none'; // Video ise görsel önizleme gizlenir
+        img.style.display = 'none';
       } else {
         img.style.display = 'inline-block';
         img.src = src;
@@ -370,11 +483,14 @@
       }
     };
 
-    document.getElementById('logout-btn').onclick = () => {
+    function handleLogout() {
       localStorage.removeItem('fetih_username');
       authContainer.style.display = 'block';
       feedContainer.style.display = 'none';
-    };
+    }
+
+    document.getElementById('logout-btn').onclick = handleLogout;
+    document.getElementById('profile-logout-btn').onclick = handleLogout;
 
     function showFeed() {
       authContainer.style.display = 'none';
@@ -386,11 +502,14 @@
       try {
         const res = await fetch('https://fetih-social-f6505-default-rtdb.firebaseio.com/posts.json');
         const data = await res.json();
+        allPostsCache = data || {};
+        
         const postsList = document.getElementById('postsList');
         postsList.innerHTML = '';
-        if (data) {
-          Object.keys(data).reverse().forEach(key => {
-            addPostToUI(data[key]);
+        
+        if (allPostsCache) {
+          Object.keys(allPostsCache).reverse().forEach(key => {
+            addPostToUI(allPostsCache[key], postsList);
           });
         }
       } catch (err) {
@@ -398,8 +517,31 @@
       }
     }
 
-    function addPostToUI(post) {
-      const postsList = document.getElementById('postsList');
+    function loadMyProfile() {
+      const currentUsername = localStorage.getItem('fetih_username') || '';
+      document.getElementById('profileUsernameDisplay').innerText = '@' + currentUsername;
+      document.getElementById('profileAvatarLetter').innerText = currentUsername ? currentUsername[0].toUpperCase() : 'U';
+
+      const myPostsList = document.getElementById('myPostsList');
+      myPostsList.innerHTML = '';
+
+      let hasPost = false;
+      if (allPostsCache) {
+        Object.keys(allPostsCache).reverse().forEach(key => {
+          const post = allPostsCache[key];
+          if (post.username === currentUsername) {
+            hasPost = true;
+            addPostToUI(post, myPostsList);
+          }
+        });
+      }
+
+      if (!hasPost) {
+        myPostsList.innerHTML = '<p style="text-align: center; color: #94a3b8; font-size: 13px; margin-top: 15px;">Henüz bir paylaşımın yok.</p>';
+      }
+    }
+
+    function addPostToUI(post, targetContainer) {
       const div = document.createElement('div');
       div.className = 'post-card';
       
@@ -421,7 +563,7 @@
         ${mediaHTML}
         <span class="post-time">${new Date(post.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
       `;
-      postsList.prepend(div);
+      targetContainer.appendChild(div);
     }
 
     document.getElementById('sendBtn').onclick = () => {
@@ -443,7 +585,33 @@
     };
 
     socket.on('receive_post', (post) => {
-      addPostToUI(post);
+      // Önbelleğe ekle
+      const fakeKey = 'post_' + Date.now();
+      allPostsCache[fakeKey] = post;
+
+      const postsList = document.getElementById('postsList');
+      if (postsList) {
+        const div = document.createElement('div');
+        div.className = 'post-card';
+        let mediaHTML = '';
+        if (post.mediaData) {
+          if (post.mediaData.startsWith('data:video')) {
+            mediaHTML = `<video src="${post.mediaData}" controls class="post-video"></video>`;
+          } else {
+            mediaHTML = `<img src="${post.mediaData}" class="post-media" alt="Medya">`;
+          }
+        }
+        div.innerHTML = `
+          <div class="post-header">
+            <div class="user-avatar">${post.username ? post.username[0].toUpperCase() : 'U'}</div>
+            <strong>@${post.username}</strong>
+          </div>
+          <p>${post.content}</p>
+          ${mediaHTML}
+          <span class="post-time">${new Date(post.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+        `;
+        postsList.prepend(div);
+      }
     });
 
     if (localStorage.getItem('fetih_username')) {
