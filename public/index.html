@@ -33,6 +33,38 @@
     .input-group textarea { padding-left: 14px; resize: none; height: 80px; }
     .input-group input:focus, .input-group textarea:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
 
+    .file-input-wrapper {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .file-btn {
+      flex: 1;
+      padding: 10px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px dashed rgba(56, 189, 248, 0.4);
+      border-radius: 10px;
+      color: #38bdf8;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.3s;
+    }
+
+    .file-btn:hover {
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .file-btn input {
+      display: none;
+    }
+
     .btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%); border: none; border-radius: 12px; color: #fff; font-weight: 600; font-size: 15px; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; margin-top: 6px; }
     .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3); }
 
@@ -136,10 +168,20 @@
     <div class="input-group">
       <textarea id="postContent" placeholder="Ne düşünüyorsun?"></textarea>
     </div>
-    <div class="input-group">
-      <i class="fa-solid fa-link"></i>
-      <input type="text" id="postMediaUrl" placeholder="Fotoğraf veya Video Linki (İsteğe bağlı)">
+
+    <!-- Fotoğraf ve Kamera Yükleme Butonları -->
+    <div class="file-input-wrapper">
+      <label class="file-btn">
+        <i class="fa-solid fa-image"></i> Galeri
+        <input type="file" id="mediaFile" accept="image/*,video/*">
+      </label>
+      <label class="file-btn">
+        <i class="fa-solid fa-camera"></i> Kamera
+        <input type="file" id="cameraFile" accept="image/*,video/*" capture="environment">
+      </label>
     </div>
+    <div id="fileNameDisplay" style="font-size: 11px; color: #38bdf8; margin-bottom: 10px; text-align: center;"></div>
+
     <button id="sendBtn" class="btn"><i class="fa-solid fa-paper-plane"></i> Paylaş</button>
 
     <div id="feed">
@@ -157,6 +199,8 @@
     const authContainer = document.getElementById('auth-container');
     const feedContainer = document.getElementById('feed-container');
 
+    let selectedMediaBase64 = null;
+
     document.getElementById('goto-register').onclick = () => {
       loginSection.style.display = 'none';
       registerSection.style.display = 'block';
@@ -166,6 +210,23 @@
       registerSection.style.display = 'none';
       loginSection.style.display = 'block';
     };
+
+    // Dosya Seçildiğinde (Galeri veya Kamera)
+    function handleFileSelection(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      document.getElementById('fileNameDisplay').innerText = "Seçilen dosya: " + file.name;
+
+      const reader = new FileReader();
+      reader.onload = function(uploadEvent) {
+        selectedMediaBase64 = uploadEvent.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    document.getElementById('mediaFile').onchange = handleFileSelection;
+    document.getElementById('cameraFile').onchange = handleFileSelection;
 
     document.getElementById('register-btn').onclick = async () => {
       const name = document.getElementById('reg-name').value.trim();
@@ -257,12 +318,11 @@
       div.className = 'post-card';
       
       let mediaHTML = '';
-      if (post.mediaUrl) {
-        const url = post.mediaUrl.toLowerCase();
-        if (url.includes('.mp4') || url.includes('.webm') || url.includes('video')) {
-          mediaHTML = `<video src="${post.mediaUrl}" controls class="post-video"></video>`;
+      if (post.mediaData) {
+        if (post.mediaData.startsWith('data:video')) {
+          mediaHTML = `<video src="${post.mediaData}" controls class="post-video"></video>`;
         } else {
-          mediaHTML = `<img src="${post.mediaUrl}" class="post-media" alt="Medya">`;
+          mediaHTML = `<img src="${post.mediaData}" class="post-media" alt="Medya">`;
         }
       }
 
@@ -280,17 +340,20 @@
 
     document.getElementById('sendBtn').onclick = () => {
       const content = document.getElementById('postContent').value.trim();
-      const mediaUrl = document.getElementById('postMediaUrl').value.trim();
-      if (!content && !mediaUrl) return;
+      if (!content && !selectedMediaBase64) return;
 
       socket.emit('new_post', {
         username: localStorage.getItem('fetih_username'),
         content,
-        mediaUrl,
+        mediaData: selectedMediaBase64,
         timestamp: Date.now()
       });
+
       document.getElementById('postContent').value = '';
-      document.getElementById('postMediaUrl').value = '';
+      document.getElementById('fileNameDisplay').innerText = '';
+      selectedMediaBase64 = null;
+      document.getElementById('mediaFile').value = '';
+      document.getElementById('cameraFile').value = '';
     };
 
     socket.on('receive_post', (post) => {
