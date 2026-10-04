@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fetih Sosyal</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Fetih Sosyal</h1>
+    
+    <!-- Gönderi Oluşturma Kutusu -->
+    <div class="post-box">
+      <input type="text" id="username" placeholder="Kullanıcı adın...">
+      <textarea id="postContent" placeholder="Ne düşünüyorsun?"></textarea>
+      <button id="sendBtn">Paylaş</button>
+    </div>
+
+    <!-- Akış / Feed -->
+    <div id="feed">
+      <h3>Gönderiler</h3>
+      <div id="postsList"></div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html>
