@@ -13,34 +13,47 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Türkçe Karakterleri ve Geçersiz Harfleri Temizleme
+function slugifyUsername(str) {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ş/g, 's')
+    .replace(/ı/g, 'i')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c')
+    .replace(/[^a-z0-9_.-]/g, '');
+}
+
 // --- KAYIT (REGISTER) API ---
 app.post('/api/register', async (req, res) => {
   try {
     const { name, username, email, phone, password } = req.body;
 
     if (!name || !username || !email || !password) {
-      return res.status(400).json({ error: "Lütfen zorunlu alanları doldurun!" });
+      return res.status(400).json({ error: "Lütfen tüm zorunlu alanları doldurun!" });
     }
 
-    const cleanUsername = username.replace(/\s/g, '').toLowerCase();
+    const cleanUsername = slugifyUsername(username);
 
-    // Firebase'den mevcut kullanıcıları çek
+    if (!cleanUsername) {
+      return res.status(400).json({ error: "Geçerli bir kullanıcı adı girin!" });
+    }
+
+    // Firebase'den mevcut kullanıcıları getir
     const usersRes = await fetch(`${FIREBASE_URL}/users.json`);
-    const usersData = await usersRes.json();
-    const users = usersData || {};
+    const users = (await usersRes.json()) || {};
 
     const isUsernameTaken = users[cleanUsername] !== undefined;
     const isEmailTaken = Object.values(users).some(u => u && u.email && u.email.toLowerCase() === email.toLowerCase());
-    const isPhoneTaken = phone && Object.values(users).some(u => u && u.phone && u.phone === phone);
 
     if (isUsernameTaken) {
       return res.status(400).json({ error: "Bu Fetih Sosyal kullanıcı adı zaten alınmış!" });
     }
     if (isEmailTaken) {
       return res.status(400).json({ error: "Bu e-posta adresi zaten kayıtlı!" });
-    }
-    if (isPhoneTaken) {
-      return res.status(400).json({ error: "Bu telefon numarası zaten kayıtlı!" });
     }
 
     const newUser = {
@@ -52,7 +65,7 @@ app.post('/api/register', async (req, res) => {
       createdAt: Date.now()
     };
 
-    // Firebase Realtime Database'e PUT isteği ile yaz
+    // Firebase Realtime Database'e yaz
     const saveRes = await fetch(`${FIREBASE_URL}/users/${cleanUsername}.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -64,7 +77,7 @@ app.post('/api/register', async (req, res) => {
     res.json({ success: true, message: "Kayıt başarılı! Şimdi giriş yapabilirsiniz." });
   } catch (err) {
     console.error("Kayıt Hatası:", err);
-    res.status(500).json({ error: "Sunucuda bir hata oluştu!" });
+    res.status(500).json({ error: "Sunucu hatası veya veritabanı bağlantı sorunu!" });
   }
 });
 
@@ -74,10 +87,10 @@ app.post('/api/login', async (req, res) => {
     const { identifier, password } = req.body;
 
     if (!identifier || !password) {
-      return res.status(400).json({ error: "Lütfen kullanıcı bilgisi ve şifrenizi girin!" });
+      return res.status(400).json({ error: "Lütfen bilgilerinizi girin!" });
     }
 
-    const cleanIdentifier = identifier.trim().toLowerCase();
+    const cleanIdentifier = slugifyUsername(identifier);
 
     const usersRes = await fetch(`${FIREBASE_URL}/users.json`);
     const users = await usersRes.json();
@@ -89,13 +102,13 @@ app.post('/api/login', async (req, res) => {
     const foundUser = Object.values(users).find(u => 
       u && (
         u.username === cleanIdentifier || 
-        (u.email && u.email.toLowerCase() === cleanIdentifier) || 
-        (u.phone && u.phone === cleanIdentifier)
+        (u.email && u.email.toLowerCase() === identifier.trim().toLowerCase()) || 
+        (u.phone && u.phone === identifier.trim())
       ) && u.password === password
     );
 
     if (!foundUser) {
-      return res.status(400).json({ error: "Hatalı bilgi veya şifre!" });
+      return res.status(400).json({ error: "Hatalı kullanıcı adı/e-posta veya şifre!" });
     }
 
     res.json({ success: true, username: foundUser.username, name: foundUser.name });
@@ -117,7 +130,7 @@ io.on('connection', (socket) => {
       const data = await response.json();
       io.emit('receive_post', { id: data.name, ...postData });
     } catch (err) {
-      console.error('Firebase Post Hatası:', err);
+      console.error('Post Paylaşım Hatası:', err);
     }
   });
 });
