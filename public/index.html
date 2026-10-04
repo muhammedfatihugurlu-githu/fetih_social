@@ -7,19 +7,48 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Fetih Sosyal</h1>
+
+  <!-- KİMLİK DOĞRULAMA (Giriş/Kayıt) EKRANI -->
+  <div id="auth-container" class="container auth-box">
     
-    <!-- Gönderi Oluşturma Kutusu -->
+    <!-- Giriş Formu -->
+    <div id="login-section">
+      <h1>Fetih Sosyal</h1>
+      <p class="subtitle">Tekrar hoş geldin!</p>
+      <input type="text" id="login-identifier" placeholder="E-posta, Telefon veya Kullanıcı Adı">
+      <input type="password" id="login-password" placeholder="Şifre">
+      <button id="login-btn">Giriş Yap</button>
+      <p class="toggle-text">Hesabın yok mu? <span onclick="toggleAuth('register')">Kayıt Ol</span></p>
+    </div>
+
+    <!-- Kayıt Formu (Başlangıçta Gizli) -->
+    <div id="register-section" style="display: none;">
+      <h1>Fetih Sosyal</h1>
+      <p class="subtitle">Aramıza katıl!</p>
+      <input type="text" id="reg-name" placeholder="Ad Soyad">
+      <input type="text" id="reg-username" placeholder="Kullanıcı Adı (Boşluksuz)" oninput="this.value = this.value.replace(/\s/g, '').toLowerCase()">
+      <input type="email" id="reg-email" placeholder="E-posta Adresi">
+      <input type="text" id="reg-phone" placeholder="Telefon Numarası">
+      <input type="password" id="reg-password" placeholder="Şifre belirle">
+      <button id="register-btn">Kayıt Ol</button>
+      <p class="toggle-text">Zaten hesabın var mı? <span onclick="toggleAuth('login')">Giriş Yap</span></p>
+    </div>
+
+  </div>
+
+  <!-- ANA AKIŞ EKRANI (Başlangıçta Gizli) -->
+  <div id="feed-container" class="container feed-box" style="display: none;">
+    <div class="header">
+      <h2>Fetih Sosyal</h2>
+      <button id="logout-btn" class="logout-btn">Çıkış Yap</button>
+    </div>
+    
     <div class="post-box">
-      <input type="text" id="username" placeholder="Kullanıcı adın...">
       <textarea id="postContent" placeholder="Ne düşünüyorsun?"></textarea>
       <button id="sendBtn">Paylaş</button>
     </div>
 
-    <!-- Akış / Feed -->
     <div id="feed">
-      <h3>Gönderiler</h3>
       <div id="postsList"></div>
     </div>
   </div>
