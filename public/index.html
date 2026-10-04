@@ -9,31 +9,55 @@
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #f8fafc; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-    .container { width: 100%; max-width: 440px; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 40px 30px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
-    .brand-header { text-align: center; margin-bottom: 30px; }
-    .brand-header h1 { font-size: 32px; font-weight: 700; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
-    .brand-header p { color: #94a3b8; font-size: 14px; }
-    .input-group { position: relative; margin-bottom: 16px; }
-    .input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 16px; }
-    .input-group input, .input-group textarea { width: 100%; padding: 14px 16px 14px 48px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: #fff; font-size: 14px; outline: none; transition: all 0.3s ease; }
-    .input-group textarea { padding-left: 16px; resize: none; height: 90px; }
+    body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #f8fafc; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 16px; }
+    
+    .container { 
+      width: 100%; 
+      max-width: 480px; 
+      background: rgba(30, 41, 59, 0.75); 
+      backdrop-filter: blur(16px); 
+      -webkit-backdrop-filter: blur(16px); 
+      border: 1px solid rgba(255, 255, 255, 0.1); 
+      border-radius: 20px; 
+      padding: 30px 20px; 
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
+    }
+
+    .brand-header { text-align: center; margin-bottom: 24px; }
+    .brand-header h1 { font-size: 28px; font-weight: 700; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
+    .brand-header p { color: #94a3b8; font-size: 13px; }
+
+    .input-group { position: relative; margin-bottom: 14px; width: 100%; }
+    .input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 15px; }
+    .input-group input, .input-group textarea { width: 100%; padding: 12px 14px 12px 46px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: #fff; font-size: 14px; outline: none; transition: all 0.3s ease; }
+    .input-group textarea { padding-left: 14px; resize: none; height: 80px; }
     .input-group input:focus, .input-group textarea:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
-    .btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%); border: none; border-radius: 12px; color: #fff; font-weight: 600; font-size: 15px; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; margin-top: 10px; }
+
+    .btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%); border: none; border-radius: 12px; color: #fff; font-weight: 600; font-size: 15px; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; margin-top: 6px; }
     .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3); }
-    .toggle-text { text-align: center; margin-top: 24px; font-size: 14px; color: #94a3b8; }
+
+    .toggle-text { text-align: center; margin-top: 20px; font-size: 13px; color: #94a3b8; }
     .toggle-text span { color: #38bdf8; font-weight: 600; cursor: pointer; }
     .toggle-text span:hover { text-decoration: underline; }
-    .feed-container { max-width: 600px; }
-    .feed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .logout-btn { width: auto; padding: 8px 16px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
-    .logout-btn:hover { background: rgba(239, 68, 68, 0.4); }
-    .post-card { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px; margin-top: 16px; }
-    .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .user-avatar { width: 36px; height: 36px; background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-    .post-card strong { color: #38bdf8; }
-    .post-card p { color: #e2e8f0; font-size: 14px; line-height: 1.5; }
-    .post-time { color: #64748b; font-size: 11px; margin-top: 8px; display: block; }
+
+    /* Akış Ekranı */
+    .feed-container { max-width: 540px; width: 100%; padding: 20px 16px; }
+    .feed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .logout-btn { width: auto; padding: 6px 12px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
+    
+    .post-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px; margin-top: 14px; }
+    .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .user-avatar { width: 34px; height: 34px; background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+    .post-card strong { color: #38bdf8; font-size: 14px; }
+    .post-card p { color: #e2e8f0; font-size: 13px; line-height: 1.4; word-break: break-word; margin-bottom: 8px; }
+    .post-media { width: 100%; border-radius: 10px; max-height: 300px; object-fit: cover; margin-top: 6px; }
+    .post-video { width: 100%; border-radius: 10px; max-height: 300px; margin-top: 6px; outline: none; }
+    .post-time { color: #64748b; font-size: 10px; margin-top: 6px; display: block; text-align: right; }
+
+    @media (max-width: 480px) {
+      body { padding: 8px; }
+      .container { padding: 20px 14px; border-radius: 16px; }
+    }
   </style>
 </head>
 <body>
@@ -75,7 +99,6 @@
         <input type="text" id="reg-name" placeholder="Ad Soyad">
       </div>
 
-      <!-- Kullanıcı adı: Boşluk girilemez -->
       <div class="input-group">
         <i class="fa-solid fa-at"></i>
         <input type="text" id="reg-username" placeholder="Kullanıcı Adı (Boşluksuz)" oninput="this.value = this.value.replace(/\s/g, '').toLowerCase()">
@@ -86,7 +109,6 @@
         <input type="email" id="reg-email" placeholder="E-posta Adresi">
       </div>
 
-      <!-- Telefon No: Boşluk girilemez -->
       <div class="input-group">
         <i class="fa-solid fa-phone"></i>
         <input type="text" id="reg-phone" placeholder="Telefon Numarası (Boşluksuz)" oninput="this.value = this.value.replace(/\s/g, '')">
@@ -114,6 +136,10 @@
     <div class="input-group">
       <textarea id="postContent" placeholder="Ne düşünüyorsun?"></textarea>
     </div>
+    <div class="input-group">
+      <i class="fa-solid fa-link"></i>
+      <input type="text" id="postMediaUrl" placeholder="Fotoğraf veya Video Linki (İsteğe bağlı)">
+    </div>
     <button id="sendBtn" class="btn"><i class="fa-solid fa-paper-plane"></i> Paylaş</button>
 
     <div id="feed">
@@ -131,7 +157,6 @@
     const authContainer = document.getElementById('auth-container');
     const feedContainer = document.getElementById('feed-container');
 
-    // Sayfa Geçişleri
     document.getElementById('goto-register').onclick = () => {
       loginSection.style.display = 'none';
       registerSection.style.display = 'block';
@@ -142,7 +167,6 @@
       loginSection.style.display = 'block';
     };
 
-    // Kayıt Ol Butonu
     document.getElementById('register-btn').onclick = async () => {
       const name = document.getElementById('reg-name').value.trim();
       const username = document.getElementById('reg-username').value.trim();
@@ -173,7 +197,6 @@
       }
     };
 
-    // Giriş Yap Butonu
     document.getElementById('login-btn').onclick = async () => {
       const identifier = document.getElementById('login-identifier').value.trim();
       const password = document.getElementById('login-password').value;
@@ -232,12 +255,24 @@
       const postsList = document.getElementById('postsList');
       const div = document.createElement('div');
       div.className = 'post-card';
+      
+      let mediaHTML = '';
+      if (post.mediaUrl) {
+        const url = post.mediaUrl.toLowerCase();
+        if (url.includes('.mp4') || url.includes('.webm') || url.includes('video')) {
+          mediaHTML = `<video src="${post.mediaUrl}" controls class="post-video"></video>`;
+        } else {
+          mediaHTML = `<img src="${post.mediaUrl}" class="post-media" alt="Medya">`;
+        }
+      }
+
       div.innerHTML = `
         <div class="post-header">
           <div class="user-avatar">${post.username ? post.username[0].toUpperCase() : 'U'}</div>
           <strong>@${post.username}</strong>
         </div>
         <p>${post.content}</p>
+        ${mediaHTML}
         <span class="post-time">${new Date(post.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
       `;
       postsList.prepend(div);
@@ -245,13 +280,17 @@
 
     document.getElementById('sendBtn').onclick = () => {
       const content = document.getElementById('postContent').value.trim();
-      if (!content) return;
+      const mediaUrl = document.getElementById('postMediaUrl').value.trim();
+      if (!content && !mediaUrl) return;
+
       socket.emit('new_post', {
         username: localStorage.getItem('fetih_username'),
         content,
+        mediaUrl,
         timestamp: Date.now()
       });
       document.getElementById('postContent').value = '';
+      document.getElementById('postMediaUrl').value = '';
     };
 
     socket.on('receive_post', (post) => {
