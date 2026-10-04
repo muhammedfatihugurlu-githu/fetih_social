@@ -7,18 +7,17 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// 2. Görseldeki Firebase URL'in
+// Firebase Realtime Database URL
 const FIREBASE_URL = "https://fetih-social-f6505-default-rtdb.firebaseio.com";
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Socket.IO Dinleyicisi
+// Socket.IO
 io.on('connection', (socket) => {
   console.log('Kullanıcı bağlandı:', socket.id);
 
-  // Yeni Gönderi Geldiğinde
   socket.on('new_post', async (postData) => {
     try {
       const response = await fetch(`${FIREBASE_URL}/posts.json`, {
@@ -34,7 +33,8 @@ io.on('connection', (socket) => {
   });
 });
 
-app.get('*', (req, res) => {
+// Express v5 Uyumlu SPA Catch-all Rotası
+app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
