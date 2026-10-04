@@ -7,7 +7,6 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Firebase Realtime Database URL
 const FIREBASE_URL = "https://fetih-social-f6505-default-rtdb.firebaseio.com";
 
 app.use(express.json());
@@ -23,17 +22,16 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ error: "Lütfen zorunlu alanları doldurun!" });
     }
 
-    // Boşluksuz ve küçük harf kullanıcı adı
     const cleanUsername = username.replace(/\s/g, '').toLowerCase();
 
-    // Firebase'den mevcut tüm kullanıcıları çekip kontrol edelim
+    // Firebase'den mevcut kullanıcıları çek
     const usersRes = await fetch(`${FIREBASE_URL}/users.json`);
-    const users = (await usersRes.json()) || {};
+    const usersData = await usersRes.json();
+    const users = usersData || {};
 
-    // Kullanıcı adı, e-posta veya telefon daha önce alınmış mı?
     const isUsernameTaken = users[cleanUsername] !== undefined;
-    const isEmailTaken = Object.values(users).some(u => u.email && u.email.toLowerCase() === email.toLowerCase());
-    const isPhoneTaken = phone && Object.values(users).some(u => u.phone && u.phone === phone);
+    const isEmailTaken = Object.values(users).some(u => u && u.email && u.email.toLowerCase() === email.toLowerCase());
+    const isPhoneTaken = phone && Object.values(users).some(u => u && u.phone && u.phone === phone);
 
     if (isUsernameTaken) {
       return res.status(400).json({ error: "Bu Fetih Sosyal kullanıcı adı zaten alınmış!" });
@@ -45,7 +43,6 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ error: "Bu telefon numarası zaten kayıtlı!" });
     }
 
-    // Yeni Kullanıcı Objesi
     const newUser = {
       name,
       username: cleanUsername,
@@ -55,7 +52,7 @@ app.post('/api/register', async (req, res) => {
       createdAt: Date.now()
     };
 
-    // Firebase Realtime Database'e Kaydet
+    // Firebase Realtime Database'e PUT isteği ile yaz
     const saveRes = await fetch(`${FIREBASE_URL}/users/${cleanUsername}.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -82,7 +79,6 @@ app.post('/api/login', async (req, res) => {
 
     const cleanIdentifier = identifier.trim().toLowerCase();
 
-    // Firebase'deki kullanıcıları çek
     const usersRes = await fetch(`${FIREBASE_URL}/users.json`);
     const users = await usersRes.json();
 
@@ -90,12 +86,12 @@ app.post('/api/login', async (req, res) => {
       return res.status(400).json({ error: "Kayıtlı kullanıcı bulunamadı!" });
     }
 
-    // Kullanıcı Adı, E-posta veya Telefon ile Eşleşme Ara
     const foundUser = Object.values(users).find(u => 
-      (u.username === cleanIdentifier || 
-       (u.email && u.email.toLowerCase() === cleanIdentifier) || 
-       (u.phone && u.phone === cleanIdentifier)) &&
-      u.password === password
+      u && (
+        u.username === cleanIdentifier || 
+        (u.email && u.email.toLowerCase() === cleanIdentifier) || 
+        (u.phone && u.phone === cleanIdentifier)
+      ) && u.password === password
     );
 
     if (!foundUser) {
@@ -109,7 +105,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// --- SOCKET.IO (GERÇEK ZAMANLI AKIŞ) ---
+// --- SOCKET.IO ---
 io.on('connection', (socket) => {
   socket.on('new_post', async (postData) => {
     try {
@@ -126,7 +122,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// Express v5 Catch-all
 app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });

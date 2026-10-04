@@ -1,27 +1,33 @@
 const socket = io();
 
-// Ekran Değiştirme Fonksiyonu
-window.toggleAuth = function(type) {
-  const loginSection = document.getElementById('login-section');
-  const registerSection = document.getElementById('register-section');
-  
-  if (type === 'register') {
-    loginSection.style.display = 'none';
-    registerSection.style.display = 'block';
-  } else {
-    registerSection.style.display = 'none';
-    loginSection.style.display = 'block';
-  }
-};
-
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   const authContainer = document.getElementById('auth-container');
   const feedContainer = document.getElementById('feed-container');
+  const loginSection = document.getElementById('login-section');
+  const registerSection = document.getElementById('register-section');
 
-  // --- KAYIT OL BUTONU ---
+  const gotoRegister = document.getElementById('goto-register');
+  const gotoLogin = document.getElementById('goto-login');
+
+  // Sayfa Değiştirme
+  if (gotoRegister) {
+    gotoRegister.onclick = () => {
+      loginSection.style.display = 'none';
+      registerSection.style.display = 'block';
+    };
+  }
+
+  if (gotoLogin) {
+    gotoLogin.onclick = () => {
+      registerSection.style.display = 'none';
+      loginSection.style.display = 'block';
+    };
+  }
+
+  // KAYIT OL
   const registerBtn = document.getElementById('register-btn');
   if (registerBtn) {
-    registerBtn.addEventListener('click', async () => {
+    registerBtn.onclick = async () => {
       const name = document.getElementById('reg-name').value.trim();
       const username = document.getElementById('reg-username').value.trim();
       const email = document.getElementById('reg-email').value.trim();
@@ -29,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = document.getElementById('reg-password').value;
 
       if (!name || !username || !email || !password) {
-        return alert("Lütfen isim, kullanıcı adı, e-posta ve şifre alanlarını doldurun!");
+        return alert("Lütfen Ad Soyad, Kullanıcı Adı, E-posta ve Şifre alanlarını doldurun!");
       }
 
       registerBtn.innerText = "Kaydediliyor...";
@@ -44,29 +50,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const data = await res.json();
         if (data.success) {
-          alert(data.message);
-          window.toggleAuth('login');
+          alert("Kayıt başarılı! Şimdi giriş yapabilirsiniz.");
+          registerSection.style.display = 'none';
+          loginSection.style.display = 'block';
         } else {
-          alert(data.error);
+          alert(data.error || "Kayıt olunamadı!");
         }
       } catch (err) {
-        alert("Bağlantı hatası oluştu!");
+        console.error(err);
+        alert("Sunucuya bağlanırken bir hata oluştu!");
       } finally {
         registerBtn.innerText = "Kayıt Ol";
         registerBtn.disabled = false;
       }
-    });
+    };
   }
 
-  // --- GİRİŞ YAP BUTONU ---
+  // GİRİŞ YAP
   const loginBtn = document.getElementById('login-btn');
   if (loginBtn) {
-    loginBtn.addEventListener('click', async () => {
+    loginBtn.onclick = async () => {
       const identifier = document.getElementById('login-identifier').value.trim();
       const password = document.getElementById('login-password').value;
 
       if (!identifier || !password) {
-        return alert("Lütfen bilgilerinizi girin!");
+        return alert("Lütfen e-posta/kullanıcı adı ve şifrenizi girin!");
       }
 
       loginBtn.innerText = "Giriş Yapılıyor...";
@@ -84,46 +92,47 @@ document.addEventListener('DOMContentLoaded', () => {
           localStorage.setItem('fetih_username', data.username);
           showFeed();
         } else {
-          alert(data.error);
+          alert(data.error || "Giriş başarısız!");
         }
       } catch (err) {
-        alert("Bağlantı hatası oluştu!");
+        console.error(err);
+        alert("Giriş yapılırken bir hata oluştu!");
       } finally {
         loginBtn.innerText = "Giriş Yap";
         loginBtn.disabled = false;
       }
-    });
+    };
   }
 
-  // --- ÇIKIŞ BUTONU ---
+  // ÇIKIŞ
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
+    logoutBtn.onclick = () => {
       localStorage.removeItem('fetih_username');
       authContainer.style.display = 'block';
       feedContainer.style.display = 'none';
-    });
+    };
   }
 
-  // Oturum Kontrolü
+  // EKRAN GÖSTERİMİ
   function showFeed() {
     authContainer.style.display = 'none';
     feedContainer.style.display = 'block';
     loadPosts();
   }
 
-  // Gönderileri Firebase'den Çekme
   async function loadPosts() {
     try {
       const postsList = document.getElementById('postsList');
       const res = await fetch('https://fetih-social-f6505-default-rtdb.firebaseio.com/posts.json');
       const data = await res.json();
-      postsList.innerHTML = '';
-      
-      if (data) {
-        Object.keys(data).reverse().forEach(key => {
-          addPostToUI(data[key]);
-        });
+      if (postsList) {
+        postsList.innerHTML = '';
+        if (data) {
+          Object.keys(data).reverse().forEach(key => {
+            addPostToUI(data[key]);
+          });
+        }
       }
     } catch (err) {
       console.error("Gönderiler yüklenemedi:", err);
@@ -147,10 +156,10 @@ document.addEventListener('DOMContentLoaded', () => {
     postsList.prepend(div);
   }
 
-  // Gönderi Paylaşma
+  // POST PAYLAŞMA
   const sendBtn = document.getElementById('sendBtn');
   if (sendBtn) {
-    sendBtn.addEventListener('click', () => {
+    sendBtn.onclick = () => {
       const content = document.getElementById('postContent').value.trim();
       if (!content) return;
 
@@ -162,18 +171,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
       socket.emit('new_post', postData);
       document.getElementById('postContent').value = '';
-    });
+    };
   }
 
   socket.on('receive_post', (post) => {
     addPostToUI(post);
   });
 
-  // Başlangıç Kontrolü
+  // BAŞLANGIÇ DURUMU
   if (localStorage.getItem('fetih_username')) {
     showFeed();
   } else {
     authContainer.style.display = 'block';
     feedContainer.style.display = 'none';
   }
-});
+}
+
+// Uygulamayı başlat
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
