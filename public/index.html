@@ -70,101 +70,57 @@
     .post-video { width: 100%; border-radius: 10px; max-height: 300px; margin-top: 6px; outline: none; }
     .post-time { color: #64748b; font-size: 10px; margin-top: 6px; display: block; text-align: right; }
 
-    /* --- INSTA TARZI KAMERA / MEDYA EKRANI (MODAL) --- */
-    #camera-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: #000;
-      z-index: 9999;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 20px;
-    }
-    .camera-top-bar {
+    /* İnstagram Tarzı Medya Seçim Şeridi */
+    .insta-media-bar {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: white;
-      font-size: 20px;
-    }
-    .camera-top-bar button {
-      background: none; border: none; color: white; font-size: 22px; cursor: pointer;
-    }
-    .camera-viewport {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
-      border-radius: 16px;
-      margin: 10px 0;
-      background: #111;
-    }
-    #cameraStream {
-      width: 100%; height: 100%; object-fit: cover;
-    }
-    #previewImageCaptured {
-      display: none; width: 100%; height: 100%; object-fit: cover;
-    }
-    .camera-controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-      padding-bottom: 20px;
-    }
-    /* Altta sıralanan galeri şeridi */
-    .gallery-strip {
-      display: flex;
-      gap: 8px;
-      width: 100%;
+      gap: 10px;
       overflow-x: auto;
-      padding: 5px 0;
+      padding: 6px 0;
+      margin-bottom: 14px;
     }
-    .gallery-strip::-webkit-scrollbar { height: 4px; }
-    .gallery-strip::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
-    .gallery-thumb {
-      width: 65px; height: 65px;
-      border-radius: 8px;
-      object-fit: cover;
-      cursor: pointer;
-      border: 2px solid transparent;
-      flex-shrink: 0;
-      transition: border-color 0.2s;
-    }
-    .gallery-thumb:hover { border-color: #38bdf8; }
+    .insta-media-bar::-webkit-scrollbar { height: 4px; }
+    .insta-media-bar::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
 
-    .capture-row {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      width: 100%;
-    }
-    .shutter-btn {
+    .insta-add-btn {
       width: 70px; height: 70px;
-      background: white;
-      border: 4px solid rgba(56, 189, 248, 0.8);
-      border-radius: 50%;
-      cursor: pointer;
-      transition: transform 0.1s;
-    }
-    .shutter-btn:active { transform: scale(0.9); }
-    
-    .gallery-upload-label {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 10px 15px;
-      border-radius: 10px;
-      color: white;
-      font-size: 13px;
-      cursor: pointer;
+      background: rgba(56, 189, 248, 0.1);
+      border: 2px dashed #38bdf8;
+      border-radius: 12px;
+      color: #38bdf8;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 11px;
+      gap: 4px;
+      flex-shrink: 0;
     }
-    .gallery-upload-label input { display: none; }
+    .insta-add-btn i { font-size: 18px; }
+
+    .insta-thumb-container {
+      position: relative;
+      width: 70px; height: 70px;
+      flex-shrink: 0;
+    }
+    .insta-thumb {
+      width: 100%; height: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid #38bdf8;
+    }
+    .insta-thumb-remove {
+      position: absolute;
+      top: -4px; right: -4px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px; height: 20px;
+      font-size: 10px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
 
     /* Alt Navigasyon Barı */
     .bottom-nav {
@@ -273,7 +229,7 @@
   </div>
 
   <!-- ANA AKIŞ VE PROFİL EKRANI -->
-  <div id="feed-container" class="container feed-container" style="display: none;" id="swipeArea">
+  <div id="feed-container" class="container feed-container" style="display: none;">
     
     <!-- AKIŞ SEKMESİ -->
     <div id="tab-feed">
@@ -283,19 +239,16 @@
       </div>
       
       <div class="input-group">
-        <textarea id="postContent" placeholder="Ne düşünüyorsun? (Sağa kaydırarak kamera açabilirsin ➔)"></textarea>
+        <textarea id="postContent" placeholder="Ne düşünüyorsun?"></textarea>
       </div>
 
-      <!-- Kamera Açma Butonu -->
-      <button class="btn" id="openCameraBtn" style="background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; margin-bottom: 14px;">
-        <i class="fa-solid fa-camera"></i> Kamera / Galeri Aç (Insta Tarzı)
-      </button>
-
-      <!-- Seçilen Medya Önizleme -->
-      <div id="previewContainer" style="display:none; text-align:center; margin-bottom:14px;">
-        <img id="previewImg" src="" alt="Önizleme" style="max-width:100%; max-height:150px; border-radius:10px; object-fit:cover;">
-        <br>
-        <button class="remove-media" id="removeMediaBtn" style="background:#ef4444; color:white; border:none; padding:4px 8px; font-size:11px; border-radius:6px; cursor:pointer; margin-top:6px;">Medyayı Kaldır</button>
+      <!-- Instagram Tarzı Alt Fotoğraf Şeridi ve Ekleme Butonu -->
+      <div class="insta-media-bar" id="instaMediaBar">
+        <label class="insta-add-btn">
+          <i class="fa-solid fa-plus"></i>
+          <span>Medya Ekle</span>
+          <input type="file" id="instaFileInput" accept="image/*,video/*" multiple style="display: none;">
+        </label>
       </div>
 
       <button id="sendBtn" class="btn"><i class="fa-solid fa-paper-plane"></i> Paylaş</button>
@@ -336,38 +289,6 @@
 
   </div>
 
-  <!-- INSTA TARZI KAMERA MODALI -->
-  <div id="camera-modal">
-    <div class="camera-top-bar">
-      <span>Kamera & Galeri</span>
-      <button id="closeCameraModal"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    
-    <div class="camera-viewport">
-      <video id="cameraStream" autoplay playsinline></video>
-      <img id="previewImageCaptured" alt="Çekilen Fotoğraf">
-      <canvas id="snapshotCanvas" style="display:none;"></canvas>
-    </div>
-
-    <div class="camera-controls">
-      <!-- Altta Sıralanan Fotoğraflar Şeridi -->
-      <div class="gallery-strip" id="galleryStrip">
-        <!-- Tarayıcıdan seçilen son fotoğraflar buraya otomatik eklenecek -->
-      </div>
-
-      <div class="capture-row">
-        <label class="gallery-upload-label">
-          <i class="fa-solid fa-folder-open"></i> Dosya Seç
-          <input type="file" id="modalFileInput" accept="image/*,video/*" multiple>
-        </label>
-        
-        <button class="shutter-btn" id="shutterBtn" title="Fotoğraf Çek"></button>
-        
-        <button class="btn" id="useCapturedBtn" style="width: auto; padding: 10px 20px; display: none;">Kullan ✓</button>
-      </div>
-    </div>
-  </div>
-
   <script src="/socket.io/socket.io.js"></script>
   
   <script>
@@ -379,7 +300,6 @@
     const feedContainer = document.getElementById('feed-container');
 
     let selectedMediaBase64 = null;
-    let mediaStream = null;
 
     document.getElementById('goto-register').onclick = () => {
       loginSection.style.display = 'none';
@@ -391,90 +311,12 @@
       loginSection.style.display = 'block';
     };
 
-    // --- INSTA TARZI SAĞA KAYDIRMA (SWIPE) VE BUTON İLE KAMERA AÇMA ---
-    const openCameraModal = async () => {
-      const modal = document.getElementById('camera-modal');
-      modal.style.display = 'flex';
-      
-      try {
-        mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
-        const videoElem = document.getElementById('cameraStream');
-        videoElem.srcObject = mediaStream;
-        videoElem.style.display = 'block';
-        document.getElementById('previewImageCaptured').style.display = 'none';
-        document.getElementById('useCapturedBtn').style.display = 'none';
-      } catch (err) {
-        console.warn("Kamera izni alınamadı veya desteklenmiyor:", err);
-      }
-    };
-
-    document.getElementById('openCameraBtn').onclick = openCameraModal;
-
-    // Sağa Kaydırma Hareketi (Swipe Right) Algılama
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    document.addEventListener('touchstart', e => {
-      touchStartX = e.changedTouches[0].screenX;
-    });
-
-    document.addEventListener('touchend', e => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleSwipe();
-    });
-
-    function handleSwipe() {
-      // Eğer sağa doğru kaydırıldıysa ve akış ekranındaysak kamerayı aç
-      if (touchEndX - touchStartX > 100 && feedContainer.style.display !== 'none') {
-        openCameraModal();
-      }
-    }
-
-    // Kamerayı Kapat
-    document.getElementById('closeCameraModal').onclick = () => {
-      const modal = document.getElementById('camera-modal');
-      modal.style.display = 'none';
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-      }
-    };
-
-    // Fotoğraf Çek (Shutter)
-    document.getElementById('shutterBtn').onclick = () => {
-      const video = document.getElementById('cameraStream');
-      const canvas = document.getElementById('snapshotCanvas');
-      canvas.width = video.videoWidth || 640;
-      canvas.height = video.videoHeight || 480;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      selectedMediaBase64 = canvas.toDataURL('image/jpeg', 0.8);
-      
-      // Önizlemeye yansıt
-      const previewImg = document.getElementById('previewImageCaptured');
-      previewImg.src = selectedMediaBase64;
-      previewImg.style.display = 'block';
-      video.style.display = 'none';
-      document.getElementById('useCapturedBtn').style.display = 'block';
-    };
-
-    // Çekilen veya Seçilen Medyayı Onayla
-    document.getElementById('useCapturedBtn').onclick = () => {
-      if (selectedMediaBase64) {
-        showMainPreview(selectedMediaBase64);
-        document.getElementById('camera-modal').style.display = 'none';
-        if (mediaStream) {
-          mediaStream.getTracks().forEach(track => track.stop());
-        }
-      }
-    };
-
-    // Alt Galeri Şeridinden Dosya Seçme / Yükleme
-    document.getElementById('modalFileInput').onchange = function(e) {
+    // Instagram Tarzı Medya Seçimi ve Şeride Ekleme
+    document.getElementById('instaFileInput').onchange = function(e) {
       const files = e.target.files;
       if (!files.length) return;
 
-      const galleryStrip = document.getElementById('galleryStrip');
+      const mediaBar = document.getElementById('instaMediaBar');
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -482,38 +324,33 @@
 
         reader.onload = function(uploadEvent) {
           const res = uploadEvent.target.result;
+          selectedMediaBase64 = res; // Son seçilen ana medya yapılır
 
-          // Galeri şeridine küçük resim ekle
-          const thumb = document.createElement('img');
-          thumb.src = res;
-          thumb.className = 'gallery-thumb';
-          thumb.onclick = () => {
-            selectedMediaBase64 = res;
-            showMainPreview(res);
-            document.getElementById('camera-modal').style.display = 'none';
-            if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+          // Eski önizlemeyi temizle, yenisini ekle
+          const existingThumbs = mediaBar.querySelectorAll('.insta-thumb-container');
+          existingThumbs.forEach(el => el.remove());
+
+          const thumbContainer = document.createElement('div');
+          thumbContainer.className = 'insta-thumb-container';
+
+          const img = document.createElement('img');
+          img.src = res;
+          img.className = 'insta-thumb';
+
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'insta-thumb-remove';
+          removeBtn.innerHTML = '×';
+          removeBtn.onclick = () => {
+            thumbContainer.remove();
+            selectedMediaBase64 = null;
           };
-          galleryStrip.prepend(thumb);
 
-          // İlk seçileni otomatik seç
-          if (i === 0) {
-            selectedMediaBase64 = res;
-          }
+          thumbContainer.appendChild(img);
+          thumbContainer.appendChild(removeBtn);
+          mediaBar.appendChild(thumbContainer);
         };
         reader.readAsDataURL(file);
       }
-    };
-
-    function showMainPreview(src) {
-      const container = document.getElementById('previewContainer');
-      const img = document.getElementById('previewImg');
-      img.src = src;
-      container.style.display = 'block';
-    }
-
-    document.getElementById('removeMediaBtn').onclick = () => {
-      selectedMediaBase64 = null;
-      document.getElementById('previewContainer').style.display = 'none';
     };
 
     // Sekme Değiştirme
@@ -690,8 +527,12 @@
       });
 
       document.getElementById('postContent').value = '';
-      document.getElementById('previewContainer').style.display = 'none';
       selectedMediaBase64 = null;
+      
+      // Şeridi temizle
+      const mediaBar = document.getElementById('instaMediaBar');
+      const existingThumbs = mediaBar.querySelectorAll('.insta-thumb-container');
+      existingThumbs.forEach(el => el.remove());
     };
 
     socket.on('receive_post', (post) => {
